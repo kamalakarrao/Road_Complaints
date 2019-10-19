@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1038288873945",
+    "firebase_url": "https://road-complaints.firebaseio.com",
+    "project_id": "road-complaints",
+    "storage_bucket": "road-complaints.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038288873945:android:f4db962c9aba65bc5691c8",
+        "android_client_info": {
+          "package_name": "com.example.roadcomplaints"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038288873945-cr13u7ho00kog0pm8pibrcbpaabqis9d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roadcomplaints",
+            "certificate_hash": "aa5d38e67b405c25aa1ccd0069b73fb15f484125"
+          }
+        },
+        {
+          "client_id": "1038288873945-3nvd3vn2m6hr6ksh9njilgncjaagpnd2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBH_rLoCFFyoU-Hq-mB0QTZVNiL9Up2QNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038288873945-3nvd3vn2m6hr6ksh9njilgncjaagpnd2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
