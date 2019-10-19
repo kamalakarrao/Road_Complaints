@@ -1,5 +1,6 @@
 package com.example.roadcomplaints;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.roadcomplaints.adapter.RecyclerViewAdapter;
+import com.example.roadcomplaints.model.Complaints;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,10 +27,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     Button complain;
     private FirebaseAuth mAuth;
     private boolean isAgent = false;
+
+    RecyclerView recyclerView;
+
+    DatabaseReference databaseReference;
+
+    ProgressDialog progressDialog;
+
+    List<Complaints> complaintsList = new ArrayList<>();
+
+
+    RecyclerViewAdapter adapter;
+
+    ConstraintLayout c_layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +54,54 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+
         complain = (Button) findViewById(R.id.complain);
 
+        c_layout = (ConstraintLayout) findViewById(R.id.c_layout);
+
         mAuth = FirebaseAuth.getInstance();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("complaints");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot data) {
+                complaintsList.clear();
+                for (DataSnapshot dataSnapshot : data.getChildren()) {
+                    try {
+                        String complaintId = dataSnapshot.getKey();
+                        String description = dataSnapshot.child("description").getValue().toString();
+                        String status = dataSnapshot.child("status").getValue().toString();
+                        String image = dataSnapshot.child("image_url").getValue().toString();
+                        String agentId = "";
+                        Complaints complaints = new Complaints(complaintId, image, description, status, agentId);
+
+                        complaintsList.add(complaints);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (complaintsList.size()<1){
+                    recyclerView.setVisibility(View.GONE);
+                }else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+
+
+                adapter = new RecyclerViewAdapter(MainActivity.this, complaintsList);
+
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         complain.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -164,13 +166,33 @@ public class RegisterComplant extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void updateData(String downloadUrl) {
         Toast.makeText(RegisterComplant.this,"ff"+ downloadUrl, Toast.LENGTH_SHORT).show();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("urlll");
 
-        myRef.setValue(downloadUrl);
+
+        double latitude = 0.0;
+        double longitude = 0.0;
+        GPSTracker gpsTracker = new GPSTracker(this);
+        if (gpsTracker.getIsGPSTrackingEnabled()){
+            latitude=gpsTracker.latitude;
+            longitude = gpsTracker.longitude;
+        }
+
+        // Write a message to the database
+        DatabaseReference myRef = database.getReference().child("complaints");
+
+        String cid = myRef.push().getKey();
+        myRef.child(cid).child("image_url").setValue(downloadUrl);
+        myRef.child(cid).child("description").setValue(edt_description.getText().toString());
+        myRef.child(cid).child("lat").setValue(latitude);
+        myRef.child(cid).child("long").setValue(longitude);
+        myRef.child(cid).child("citizen_id").setValue(getUuid());
+        myRef.child(cid).child("citizen_name").setValue(getName());
+        myRef.child(cid).child("status").setValue("pending");
+        finish();
     }
 
 
