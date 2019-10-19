@@ -97,18 +97,24 @@ public class RegisterComplant extends AppCompatActivity {
 
         if( mImageUri != null){
 
-            StorageReference filepath = mStorage.child("Blog_Images").child(mImageUri.getLastPathSegment());
+            final StorageReference filepath = mStorage.child("Blog_Images").child(mImageUri.getLastPathSegment());
 
             filepath.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                   String downloadUrl =taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                   //String downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
                    //YOU HAVE TO WORK HERE TO GET IMAGE URL
+                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.d("ALERT", "onSuccess: uri= "+ uri.toString());
+                            updateData(uri.toString());
 
+                        }
+                    });
 //                   downloadUrl = taskSnapshot.getMetadata().getReference().getPath();
 //                   getcompletePath(downloadUrl);
-//                   updateData(downloadUrl);
-                    Toast.makeText(RegisterComplant.this, "Done", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(RegisterComplant.this, "Done", Toast.LENGTH_SHORT).show();
                 }
             });
         }
