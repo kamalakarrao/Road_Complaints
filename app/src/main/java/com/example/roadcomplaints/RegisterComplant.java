@@ -1,11 +1,7 @@
 package com.example.roadcomplaints;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,11 +13,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -29,10 +25,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 
 public class RegisterComplant extends AppCompatActivity {
-    Button btn_send,btn_capture;
+    Button btn_send,btn_capture,defaultcomplaint;
     EditText edt_description;
 
     //source
@@ -58,6 +53,7 @@ public class RegisterComplant extends AppCompatActivity {
 
         btn_capture = (Button) findViewById(R.id.btn_capture);
         btn_send = (Button) findViewById(R.id.btn_send);
+        defaultcomplaint = (Button) findViewById(R.id.defaultcomplaint);
         edt_description = (EditText) findViewById(R.id.edt_description);
 
 
@@ -70,6 +66,35 @@ public class RegisterComplant extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         ref = firebaseDatabase.getReference("ProfileInfo");
         mAuth = FirebaseAuth.getInstance();
+
+
+        defaultcomplaint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String image_url = "https://firebasestorage.googleapis.com/v0/b/road-complaints.appspot.com/o/roads%2Fpotholes.jpg?alt=media&token=79f4bb27-c167-4fd4-9100-b9d0fbf535a9";
+                double latitude = 0.0;
+                double longitude = 0.0;
+
+
+                // Write a message to the database
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference().child("complaints");
+
+                String cid = myRef.push().getKey();
+                myRef.child(cid).child("image_url").setValue(image_url);
+                myRef.child(cid).child("description").setValue("The road is very bad");
+                myRef.child(cid).child("lat").setValue(latitude);
+                myRef.child(cid).child("long").setValue(longitude);
+                myRef.child(cid).child("citizen_id").setValue(getUuid());
+                myRef.child(cid).child("citizen_name").setValue(getName());
+                myRef.child(cid).child("status").setValue("pending");
+
+
+            }
+        });
+
+
 
         btn_capture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +117,12 @@ public class RegisterComplant extends AppCompatActivity {
 
     }
 
+    private String getName(){
+        return FirebaseAuth.getInstance().getCurrentUser().getDisplayName().toString();
+    }
+    private String getUuid(){
+        return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+    }
     private void startposting() {
 
 
